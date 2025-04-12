@@ -1,431 +1,265 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
-const String url = "http://127.0.0.1:8000";
-
+const String url = "http://192.168.100.23:3030";
+String accessToken = "";
+String refreshToken = "";
+Map currentUser = {};
+double screenWidth = 0;
+double screenHeight = 0;
+int during = 400;
 String token="";
 
 
 List<String> listRoutes = [];
 
-TextStyle textWelcome = const TextStyle(
-    fontWeight: FontWeight.bold,
-    fontSize: 25,
-    color: Colors.white,
-    letterSpacing: 2
-);
 
-Color colorApp = const Color(0xFF1B4F9D);
-List<Color> listColor = [const Color(0xFF74B72F), const Color(0xFF12642E)];
-TextStyle textWelcomeUnder = TextStyle(
-    fontWeight: FontWeight.bold,
-    fontSize: 17,
-    letterSpacing: 2,
-    color: Colors.white.withOpacity(0.7)
-);
 
+Color colorApp = Colors.black;
+List<Color> listColor = [Colors.black, Colors.black54];
 
 class CounterPage {
   int value;
   CounterPage(this.value);
 }
 
-List<List> groupTree =[];
+class ChooseCori {
+  int x;
+  int y;
+  ChooseCori(this.x,this.y);
+}
 
+List<Map> listPay = [
+  {
+    'name' : 'MTN Money',
+    'image' :'assets/methods_pay/mp2.png',
+    'detail' :  'Default payment'
+  },
+  {
+    'name' : 'MOOV Money',
+    'image' :'assets/methods_pay/mp3.png',
+    'detail' :  'Not default payment'
+  },
+  {
+    'name' : 'Celtis Cash',
+    'image' :'assets/methods_pay/mp4.png',
+    'detail' :  'Not default payment'
+  },
+  {
+    'name' : 'MastersCard',
+    'image' :'assets/methods_pay/mp1.png',
+    'detail' :  'Not default payment'
+  },
+];
 
+List<Map> listAlphabets = [],listDivinities = [], listSigns = [],listDetails = [];
 
-   List<Map> listTree =   [
-      {
-        'name_one' : "Aloe Vera",
-        'name_two':'Aloes',
-        'image' : 'assets/plantes/wall1.jpg',
-        'description': "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
-        'details': [
-          "Aspect général :Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-          "Feuilles :Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-          "Vertus :Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-          "Aspect général :Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-        ]
-      },
-     {
-       'name_one' : "Contractions Spasmodiques",
-       'name_two':'Diaphragme Codycross',
-       'image' : 'assets/plantes/wall2.png',
-       'description' :"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters",
-       'details':[
-         "Aspect général :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Feuilles :Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-         "Vertus :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Aspect général :Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-       ]
-     },
-     {
-       'name_one' : "Organe Femelle",
-       'name_two':'fleurs-codycross',
-       'image' : 'assets/plantes/wall3.jpg',
-       'description' :"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters",
-       'details':[
-         "Aspect général :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Feuilles :Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-         "Vertus :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Aspect général :Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-       ]
-     },
-     {
-       'name_one' : "Aloe Vera",
-       'name_two':'Aloes',
-       'image' : 'assets/plantes/wall4.jpg',
-       'description' :"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters",
-       'details':[
-         "Aspect général :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Feuilles :Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-         "Vertus :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Aspect général :Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-       ]
-     },
-     {
-        'name_one' : "Organe Femelle",
-        'name_two':'fleurs-codycross',
-       'image' : 'assets/plantes/wall5.jpg',
-       'description' :"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters",
-       'details':[
-         "Aspect général :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Feuilles :Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-         "Vertus :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Aspect général :Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-       ]
-     },
-     {
-       'name_one' : "Contractions Spasmodiques",
-       'name_two':'Diaphragme Codycross',
-       'image' : 'assets/plantes/wall6.jpg',
-       'description' :"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters",
-       'details':[
-         "Aspect général :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Feuilles :Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-         "Vertus :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Aspect général :Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-       ]
-     },
-     {
-       'name_one' : "Aloe Vera",
-       'name_two':'Aloes',
-       'image' : 'assets/plantes/wall7.jpg',
-       'description' :"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters",
-       'details':[
-         "Aspect général :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Feuilles :Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-         "Vertus :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Aspect général :Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-       ]
-     },
-     {
-       'name_one' : "Quasar Compact Codycross",
-       'name_two':'Compact Codycross',
-       'image' : 'assets/plantes/wall8.jpg',
-       'description' :"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters",
-       'details':[
-         "Aspect général :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Feuilles :Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-         "Vertus :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Aspect général :Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-       ]
-     },
-     {
-       'name_one' : "Aloe Vera",
-       'name_two':'Aloes',
-       'image' : 'assets/plantes/wall9.jpg',
-       'description' :"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters",
-       'details':[
-         "Aspect général :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Feuilles :Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-         "Vertus :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Aspect général :Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-       ]
-     },
-     {
-       'name_one' : "Contractions Spasmodiques",
-       'name_two':'Contractions Spasmodiques',
-       'image' : 'assets/plantes/wall10.jpg',
-       'description' :"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters",
-       'details':[
-         "Aspect général :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Feuilles :Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-         "Vertus :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Aspect général :Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-       ]
-     },
-     {
-       'name_one' : "Aloe Vera",
-       'name_two':'Aloes',
-       'image' : 'assets/plantes/wall11.jpg',
-       'description' :"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters",
-       'details':[
-         "Aspect général :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Feuilles :Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-         "Vertus :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Aspect général :Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-       ]
-     },
-     {
-       'name_one' : "Aloe Vera",
-       'name_two':'Aloes',
-       'image' : 'assets/plantes/wall12.jpg',
-       'description' :"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters",
-       'details':[
-         "Aspect général :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Feuilles :Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-         "Vertus :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Aspect général :Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-       ]
-     },
-     {
-       'name_one' : "Contractions Spasmodiques",
-       'name_two':'Aloes',
-       'image' : 'assets/plantes/wall13.jpg',
-       'description' :"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters",
-       'details':[
-         "Aspect général :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Feuilles :Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-         "Vertus :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Aspect général :Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-       ]
-     },
-     {
-       'name_one' : "Compact Codycross",
-       'name_two':'Aloes',
-       'image' : 'assets/plantes/wall14.jpg',
-       'description' :"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters",
-       'details':[
-         "Aspect général :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Feuilles :Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-         "Vertus :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Aspect général :Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-       ]
-     },
-     {
-       'name_one' : "Aloe Vera",
-       'name_two':'Compact Codycross',
-       'image' : 'assets/plantes/wall15.jpg',
-       'description' :"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters",
-       'details':[
-         "Aspect général :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Feuilles :Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-         "Vertus :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Aspect général :Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-       ]
-     },
+ValueNotifier<bool> listSignsNotifier = ValueNotifier(false),
+    listAlphabetsNotifier = ValueNotifier(false),
+    listDivinitiesNotifier = ValueNotifier(false);
 
-     {
-       'name_one' : "Aloe Vera",
-       'name_two':'Aloes',
-       'image' : 'assets/plantes/wall16.jpg',
-       'description' :"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters",
-       'details':[
-         "Aspect général :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Feuilles :Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-         "Vertus :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Aspect général :Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-       ]
-     },
-     {
-       'name_one' : "Contractions Spasmodiques",
-       'name_two':'Diaphragme Codycross',
-       'image' : 'assets/plantes/wall17.jpg',
-       'description' :"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters",
-       'details':[
-         "Aspect général :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Feuilles :Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-         "Vertus :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Aspect général :Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-       ]
-     },
-     {
-       'name_one' : "Organe Femelle",
-       'name_two':'fleurs-codycross',
-       'image' : 'assets/plantes/wall18.png',
-       'description' :"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters",
-       'details':[
-         "Aspect général :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Feuilles :Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-         "Vertus :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Aspect général :Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-       ]
-     },
-     {
-       'name_one' : "Aloe Vera",
-       'name_two':'Aloes',
-       'image' : 'assets/plantes/wall19.jpg',
-       'description' :"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters",
-       'details':[
-         "Aspect général :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Feuilles :Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-         "Vertus :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Aspect général :Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-       ]
-     },
-     {
-       'name_one' : "Organe Femelle",
-       'name_two':'fleurs-codycross',
-       'image' : 'assets/plantes/wall20.jpg',
-       'description' :"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters",
-       'details':[
-         "Aspect général :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Feuilles :Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-         "Vertus :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Aspect général :Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-       ]
-     },
-     {
-       'name_one' : "Contractions Spasmodiques",
-       'name_two':'Diaphragme Codycross',
-       'image' : 'assets/plantes/wall21.png',
-       'description' :"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters",
-       'details':[
-         "Aspect général :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Feuilles :Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-         "Vertus :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Aspect général :Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-       ]
-     },
-     {
-       'name_one' : "Aloe Vera",
-       'name_two':'Aloes',
-       'image' : 'assets/plantes/wall22.png',
-       'description' :"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters",
-       'details':[
-         "Aspect général :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Feuilles :Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-         "Vertus :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Aspect général :Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-       ]
-     },
-     {
-       'name_one' : "Quasar Compact Codycross",
-       'name_two':'Compact Codycross',
-       'image' : 'assets/plantes/wall23.jpg',
-       'description' :"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters",
-       'details':[
-         "Aspect général :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Feuilles :Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-         "Vertus :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Aspect général :Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-       ]
-     },
-     {
-       'name_one' : "Aloe Vera",
-       'name_two':'Aloes',
-       'image' : 'assets/plantes/wall24.jpg',
-       'description' :"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters",
-       'details':[
-         "Aspect général :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Feuilles :Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-         "Vertus :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Aspect général :Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-       ]
-     },
-     {
-       'name_one' : "Contractions Spasmodiques",
-       'name_two':'Contractions Spasmodiques',
-       'image' : 'assets/plantes/wall25.png',
-       'description' :"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters",
-       'details':[
-         "Aspect général :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Feuilles :Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-         "Vertus :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Aspect général :Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-       ]
-     },
-     {
-       'name_one' : "Aloe Vera",
-       'name_two':'Aloes',
-       'image' : 'assets/plantes/wall26.jpg',
-       'description' :"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters",
-       'details':[
-         "Aspect général :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Feuilles :Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-         "Vertus :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Aspect général :Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-       ]
-     },
-     {
-       'name_one' : "Aloe Vera",
-       'name_two':'Aloes',
-       'image' : 'assets/plantes/wall27.jpg',
-       'description' :"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters",
-       'details':[
-         "Aspect général :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Feuilles :Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-         "Vertus :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Aspect général :Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-       ]
-     },
-     {
-       'name_one' : "Contractions Spasmodiques",
-       'name_two':'Aloes',
-       'image' : 'assets/plantes/wall28.png',
-       'description' :"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters",
-       'details':[
-         "Aspect général :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Feuilles :Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-         "Vertus :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Aspect général :Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-       ]
-     },
-     {
-       'name_one' : "Compact Codycross",
-       'name_two':'Aloes',
-       'image' : 'assets/plantes/wall29.jpg',
-       'description' :"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters",
-       'details':[
-         "Aspect général :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Feuilles :Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-         "Vertus :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Aspect général :Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-       ]
-     },
-     {
-       'name_one' : "Aloe Vera",
-       'name_two':'Compact Codycross',
-       'image' : 'assets/plantes/wall30.jpg',
-       'description' :"It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters",
-       'details':[
-         "Aspect général :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Feuilles :Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-         "Vertus :It is a long established fact that a reader will be distracted by the readable content of a page when looking at its.",
-         "Aspect général :Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-       ]
-     },
+class DatabaseHelper {
+  final databaseName = 'database.db';
+  Database? _database;
 
-    ];
-
-class DataClass{
-
-   Future<List> getTree() async{
-
-    List<List> result = [];
-    int n = listTree.length;
-    int a = 5,b=0;
-    int c = (n/a) as int;
-
-    List E=[];
-    for(int i=0;i<c;i++){
-      E=[];
-      for(int j =0;j<a;j++){
-
-        E.add(Map.from(listTree[b]));
-        b++;
-      }
-      result.add(E);
+  Future get database async {
+    if (_database != null) {
+      return _database;
     }
-    c = c*a;
-    n = n-c;
-    E=[];
-    for(int i=0;i<n;i++){
-      E.add(Map.from(listTree[b]));
-      b++;
+    else {
+      _database = await initDB();
+      return _database;
     }
-    groupTree = result;
+  }
+
+  Future<Database> initDB() async {
+    print('---------INITIALISATION DB-----------');
+
+    final directory = await getDatabasesPath();;
+    final path = join(directory, databaseName);
+    return await openDatabase(path, version: 1, onCreate: createDB);
+  }
+
+  Future createDB(Database db, int version) async {
+    print('---------CREATE DB-----------');
+
+    await db.execute('''CREATE TABLE IF NOT EXISTS user(
+      accessToken TEXT NOT NULL,
+      refreshToken TEXT NOT NULL
+      )'''
+    );
+
+    print('Batabase is create of success');
+  }
+
+
+  Future insertToken(Map<String, dynamic> user) async {
+    final db = await database;
+    await db.insert("user", user);
+
+    print('add project success');
+  }
+
+  Future<List<Map>> getTokenUser() async {
+    final db = await database;
+    return await db!.query('user');
+  }
+
+  Future<List<Map>> getSignsAll() async {
+    final uri = Uri.parse("$url/signe");
+    final response = await http.get(uri, headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $accessToken"
+    });
+
+    listSigns = json.decode(response.body).cast<Map<dynamic, dynamic>>();
+    listSignsNotifier.value = listSignsNotifier.value == false;
     return [];
   }
 
+  Future<List<Map>> searchSign(String item) async {
+
+    final uri = Uri.parse("$url/signe/search");
+    final response = await http.get(uri, headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $accessToken"
+    });
+    listSigns = json.decode(response.body).cast<Map<dynamic, dynamic>>();
+    listSignsNotifier.value = listSignsNotifier.value == false;
+    return [];
+  }
+
+  Future<List<Map>> searchSign2(List<int>list) async {
+
+    List<int> tableauImpair = [];
+    List<int> tableauPair = [];
+    for (int i = 0; i < list.length; i++) {
+      if (i % 2 == 0) {
+        tableauImpair.add(list[i]);
+      } else {
+        tableauPair.add(list[i]);
+      }
+    }
+    Map<String,dynamic> request = {
+      'value1' : tableauPair,
+      'value2' : tableauImpair
+    };
+
+    print(jsonEncode(request));
+
+    final uri = Uri.parse("$url/signe/search/table/verify");
+    final response = await http.post(uri,
+      body: jsonEncode(request),
+      headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $accessToken"
+    });
+    print('coucocu');
+    print(response.body);
+    listSigns = json.decode(response.body).cast<Map<dynamic, dynamic>>();
+    listSignsNotifier.value = listSignsNotifier.value == false;
+    return [];
+  }
+
+  Future<List<Map>> getDivinitiesAll() async {
+    final uri = Uri.parse("$url/divinity");
+    final response = await http.get(uri, headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $accessToken"
+    });
+
+    listDivinities = json.decode(response.body).cast<Map<dynamic, dynamic>>();
+    listDivinitiesNotifier.value = listDivinitiesNotifier.value == false;
+    return [];
+  }
+
+  Future<List<Map>> searchDivinity(String item) async {
+    final uri = Uri.parse("$url/divinity/search/$item");
+    final response = await http.get(uri,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $accessToken"
+        }
+    );
+    listDivinities = json.decode(response.body).cast<Map<dynamic, dynamic>>();
+    listDivinitiesNotifier.value = listDivinitiesNotifier.value == false;
+    return [];
+  }
+
+  Future<List<Map>> getAlphabetsAll() async {
+    final uri = Uri.parse("$url/alphabet");
+    final response = await http.get(uri, headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $accessToken"
+    });
+
+    listAlphabets = json.decode(response.body).cast<Map<dynamic, dynamic>>();
+    listAlphabetsNotifier.value = listAlphabetsNotifier.value == false;
+    return [];
+  }
+
+  Future<List<Map>> searchAlphabet(String item) async {
+
+    final uri = Uri.parse("$url/alphabet/search/$item");
+    final response = await http.get(uri,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $accessToken"
+        }
+    );
+
+    listAlphabets = json.decode(response.body).cast<Map<dynamic, dynamic>>();
+    listAlphabetsNotifier.value = listAlphabetsNotifier.value == false;
+    return [];
+  }
+
+
+  Future getUserProfile() async {
+    final uri = Uri.parse("$url/user/profile");
+    final response = await http.get(uri, headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $accessToken"
+    });
+
+    Map currentUser  = json.decode(response.body);
+  }
+}
+
+
+class Group {
+
+  List<List<Map>> getGroupList(List<Map> list) {
+
+    List<List<Map>> result = [];
+    int n = list.length;
+    int a = 5,b=0;
+    int c = n ~/ a ;
+    List<Map> E = [];
+    if(c>0){
+      for(int i=0;i<c;i++){
+        E=[];
+        for(int j =0;j<a;j++){
+
+          E.add(list[b]);
+          b++;
+        }
+        result.add(E);
+      }
+    }
+
+    c = c*a;
+    n = n-c;
+    E = [];
+    for(int i=0;i<n;i++){
+      E.add(list[b]);
+      b++;
+    }
+
+    result.add(E);
+
+    return result;
+  }
 }

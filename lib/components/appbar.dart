@@ -2,49 +2,46 @@ import 'package:flutter/material.dart';
 
 import 'data_class.dart';
 
-class AppbarWidget extends StatelessWidget implements PreferredSizeWidget {
-  const AppbarWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return  Container(
-      decoration: const BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            offset: Offset(
-              5.0,
-              5.0,
-            ), //Offset
-            blurRadius: 5.0,
-            spreadRadius: 2.0,
-          ), //BoxShadow
-          BoxShadow(
-            color: Color(0xff363636),
-            offset: Offset(0.0, 0.0),
-            blurRadius: 5.0,
-            spreadRadius: 0.0,
-          )
-        ]
+AppBar appBarWidget (String title,BuildContext context){
+  return AppBar(
+    elevation: 3.0,
+    shadowColor: Colors.black,
+    backgroundColor: Colors.white,
+    title: Text(title,
+      style: const TextStyle(
+          fontFamily: 'Roboto-Regular',
+          color: Colors.black
       ),
-      child: AppBar(
-        elevation: 10,
-        backgroundColor: Colors.white,
-        title: Center(child: Image.asset('assets/images/Logo3.png',width: 50,color: colorApp,)),
-        leading:  Icon(Icons.sort,color: colorApp,size: 50,),
-        actions: [
-          IconButton(
-            color: Colors.white,
-            icon: const Icon(Icons.account_circle_rounded,size: 50,color:Color(0xFF236718),),
-            onPressed: () { },
-          ),
-        ],
+    ),
+    leading: IconButton(
+        onPressed: (){
+          Navigator.pop(context);
+        },
+        icon: const Icon(Icons.arrow_back_ios_rounded,
+          color: Colors.black,
+        )
+    ),
+  );
+}
 
+AppBar appBarParent(BuildContext context){
+  return AppBar(
+    elevation: 3,
+    backgroundColor: Colors.white,
+    shadowColor: Colors.black,
+    leading:  Padding(
+      padding: const EdgeInsets.only(bottom: 5.0),
+      child: Center(child: Image.asset('assets/images/fagbassa.png',width: 70,)),
+    ),
+    actions: [
+      IconButton(
+        color: Colors.white,
+        icon: const Icon(Icons.account_circle_rounded,size: 50,color:Color(0xFF236718),),
+        onPressed: (){
+          Navigator.pushNamed(context, '/profileUser');
+        },
       ),
-    );
-  }
+    ],
 
-  @override
-  // TODO: implement preferredSize
-  Size get preferredSize => const Size.fromHeight(60);
+  );
 }

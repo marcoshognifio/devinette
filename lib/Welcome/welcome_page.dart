@@ -1,4 +1,4 @@
-import 'dart:async';
+ import 'dart:async';
 
 import 'package:flutter/material.dart';
 class WelcomePage extends StatefulWidget {
@@ -32,13 +32,13 @@ class _WelcomePageState extends State<WelcomePage> {
       body: Container(
         decoration: const BoxDecoration(
             image: DecorationImage(
-                image: AssetImage('assets/images/bg.jpg'),
+                image: AssetImage('assets/images/bg.png'),
                 fit: BoxFit.fill)
         ),
         child: Center(
           child: Container(
-            margin: const EdgeInsets.only(bottom: 200),
-            child: Image.asset('assets/images/Logo3.png',width: 200,),
+            margin: const EdgeInsets.only(bottom: 50),
+            child: Image.asset('assets/images/fagbassa.png',width: 200,),
           ),
         ),
       ),

@@ -1,0 +1,81 @@
+Cahier de charge pour DE FA-GBASSA
+
+1. Introduction
+
+    1.1. Objectif du projet
+
+        Le projet vise à développer une application mobile permettant aux gens de :
+
+            - De Connaitre leurs signes de FA en se basant sur les résultats obtenus après consultation de FA chez un prete;
+
+            - De se doccumenter sur les signes de FA;
+
+            - D'étudier le FA;
+
+            - Et de présenter les résultats de Tofa de chaque année.
+
+
+   1.2. Contexte
+
+    Fa est un système divinatoire basé sur des signes et des symboles. Il est souvent utilisé pour obtenir des conseils spirituels et résoudre des problèmes personnels ou communautaires. La pratique est effectuée par des spécialistes appelés "Babalawos" ou "Bokotonon" ou "prete du fa", selon les traditions.
+    De plus en plus de personnes sont interessées à en savoir beaucoup plus sur le fa Et il urge de les faciliter la connaissance du fa en les permettant d'en avoir à leur portée sur leurs Smartphone.
+
+
+
+    2. Fonctionnalités
+
+    2.1. Client
+
+        Inscription et Authentification
+
+    • Système d'inscription
+
+        Le client est un utilisateur , il s’enregistre avec un nom et prenom, un numéro de téléphone, un email et un mot de passe. Pour la sécurité des données client, juste après l’enregistrement le système envoi un lien par mail au client, pour confirmer l’exactitude de son mail.
+
+   • Système de connexion
+
+        Pour les prochaines connexions, Il entre ensuite son email et son mot de passe. Ensuite l'utilisateur sera redirigé vers une page de présentation des signes de fa.
+
+
+        A- Activités sur le compte utilisateur
+
+            - Parcourir l'ensemble des singes du fa.
+
+            - Se documenter sur chaque signes.
+
+            - Avoir l'interpretation de son résultat après consultation auprès d'un prete de fa.
+
+            - Avoir les résultats de TOFA.
+
+            - Apprendre le FA.
+
+            - Rechercher un signe de FA.
+
+
+
+    2.2. Administrateur
+
+        L'administrateur aura pour roler
+
+        - D'ajouter des signes, et leurs informations associées ( Description, photo,photo_resultat_consultation_trait,photo_resultat_consultation_Cauris, chant,histoire, les astuces ...etc).
+
+        - D'ajouter les resultats de TOFA.
+
+
+  3. Les outils et compétences requises pour la constructions de l'application sont :
+
+   -  Une personne ressource en FA ;
+
+   -  Maîtrise des langages de programmation back-end tel que TypeScript ;
+
+   -  Maîtrise des langages de programmation front-end tel que Dart;
+
+   -  Un framework black-end de création d'api tel que Next Js ;
+
+   -  Un framework front-end de création d'application mobile tel que Flutter;
+
+
+
+   Au thème de ce travail, nous aurons le privilège de présenter notre application réalisée portant sur le FA.
+
+
